@@ -3,7 +3,6 @@ import { Card } from 'react-bootstrap'
 
 import RegisterForm from '../components/RegisterForm';
 import { Branding } from '@innexgo/common-react-components';
-import AuthenticatedComponentProps from '../components/AuthenticatedComponentProps';
 import { ApiKey, ApiKeyNewCancelProps } from '@innexgo/frontend-auth-api';
 
 import { useNavigate } from 'react-router-dom';
