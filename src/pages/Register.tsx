@@ -7,7 +7,7 @@ import { ApiKey, ApiKeyNewCancelProps } from '@innexgo/frontend-auth-api';
 
 import { useNavigate } from 'react-router-dom';
 
-import DefaultSidebarLayout from '../components/DefaultSidebarLayout';
+import SidebarLayout from '../components/SidebarLayout';
 
 // this function returns true if your account is incomplete
 // if you're fully logged in, you can still view the register
@@ -27,7 +27,7 @@ type RegisterProps = {
 function Register(props: RegisterProps) {
   const navigate = useNavigate();
   return (
-    <DefaultSidebarLayout branding={props.branding}>
+    <SidebarLayout branding={props.branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -46,7 +46,7 @@ function Register(props: RegisterProps) {
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout>
+    </SidebarLayout>
   )
 }
 
