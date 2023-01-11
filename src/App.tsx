@@ -4,7 +4,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ApiKey } from '@innexgo/frontend-auth-api';
 
 // public pages
+import HomePage from './pages/HomePage';
 import Error404 from './pages/Error404';
+
+// login
+import LoginPage from './pages/Login';
 
 // register and auth pages
 import RegisterPage from './pages/Register';
@@ -22,6 +26,7 @@ import DarkAdaptedIcon from "./img/atlas_icon_dark.svg";
 // Bootstrap CSS & JS
 import './style/style.scss';
 import 'bootstrap/dist/js/bootstrap';
+import PartiallyAuthenticatedComponentRenderer from './components/PartiallyAuthenticatedComponentRenderer';
 
 function getPreexistingApiKey() {
   const preexistingApiKeyString = localStorage.getItem("apiKey");
@@ -53,10 +58,9 @@ function App() {
   const branding = {
     name: "Authenticator",
     tagline: "Account management service",
-    homeUrl: "/register",
+    homeUrl: "/",
     dashboardUrl: "/account",
     tosUrl: "/terms_of_service",
-    instructionsUrl: "/#instructions",
     darkAdaptedIcon: DarkAdaptedIcon,
     lightAdaptedIcon: LightAdaptedIcon,
   }
@@ -65,7 +69,7 @@ function App() {
     <Routes>
 
       {/* Login Page */}
-      <Route path="/login" element={<ForgotPasswordPage branding={branding} />} />
+      <Route path="/" element={<HomePage {...apiKeyGetSetter} branding={branding} />} />
 
       {/* Necessary for the backend auth service */}
       <Route path="/register" element={<RegisterPage {...apiKeyGetSetter} branding={branding} />} />
@@ -75,7 +79,12 @@ function App() {
       <Route path="/parent_permission_confirm" element={<ParentPermissionConfirmPage branding={branding} />} />
 
       {/* Requires you to be logged in */}
-      <Route path="/account" element={<AuthenticatedComponentRenderer branding={branding} {...apiKeyGetSetter} component={Account} />} />
+      {/* Using PartiallyAuthenticatedComponentRenderer */}
+      <Route path="/account" element={<PartiallyAuthenticatedComponentRenderer branding={branding} {...apiKeyGetSetter} component={Account} />} />
+
+      {/* Login Page */}
+      <Route path="/login" element={<LoginPage {...apiKeyGetSetter} branding={branding} />} />
+
 
       {/* Error page */}
       <Route path="*" element={<Error404 />} />

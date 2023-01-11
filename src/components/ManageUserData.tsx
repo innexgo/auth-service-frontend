@@ -1,26 +1,37 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
-import { Action, DisplayModal} from '@innexgo/common-react-components';
-import { Pencil, Lock, EnvelopePlus } from 'react-bootstrap-icons';
+import { Action, DisplayModal } from '@innexgo/common-react-components';
+import { Pencil, Lock, EnvelopePlus, BoxArrowRight } from 'react-bootstrap-icons';
 import format from 'date-fns/format';
 import { UserData, Email, ApiKey } from '@innexgo/frontend-auth-api';
 
 import EditUserDataForm from '../components/EditUserDataForm';
 import SendVerificationChallengeForm from '../components/SendVerificationChallengeForm';
 import ManagePassword from '../components/ManagePassword';
+import differenceInYears from 'date-fns/esm/fp/differenceInYears/index';
 
 const ManageUserData = (props: {
   userData: UserData,
   setUserData: (userData: UserData) => void,
-  email: Email,
+  ownEmail?: Email,
+  parentEmail?: Email,
   apiKey: ApiKey,
+  setApiKey: (a: ApiKey | null) => void,
 }) => {
-
-  const [sentEmail, setSendEmail] = React.useState(false);
+  const [sentOwnEmail, setSendOwnEmail] = React.useState(false);
+  const [sentParentEmail, setSendParentEmail] = React.useState(false);
 
   const [showEditUserData, setShowEditUserData] = React.useState(false);
-  const [showChangeEmail, setShowChangeEmail] = React.useState(false);
+  const [showChangeOwnEmail, setShowChangeOwnEmail] = React.useState(false);
+  const [showChangeParentEmail, setShowChangeParentEmail] = React.useState(false);
   const [showChangePassword, setShowChangePassword] = React.useState(false);
+
+  const editOwnEmailString =
+    props.ownEmail === undefined ? "Add Email Address" : "Change Email Address";
+
+  const editParentEmailString = props.parentEmail === undefined ? "Set Parent Email" : "Change Parent Email";
+
+  const shouldShowParentEmail = props.parentEmail !== undefined || (Date.now() - props.userData.dateofbirth) <= 13 * 365 * 24 * 60 * 60 * 1000;
 
   return <>
     <Table hover bordered>
@@ -38,20 +49,20 @@ const ManageUserData = (props: {
           <td>{format(props.userData.dateofbirth, 'MMM do, yyyy')}</td>
         </tr>
         <tr>
-          <th>Email</th>
+          <th>Email Address</th>
           <td>
             <table>
               <tr>
                 <td>
-                  {props.email.verificationChallenge.email}
-                  {sentEmail ? <span className="text-danger">*</span> : null}
+                  {props.ownEmail?.verificationChallenge.email ?? "N/A"}
+                  {sentOwnEmail ? <span className="text-danger">*</span> : null}
                 </td>
               </tr>
               {
-                sentEmail
+                sentOwnEmail
                   ? <tr>
                     <td>
-                      <small className="text-muted">Check your email for instructions to finish the email change process.</small>
+                      <small className="text-muted">Check your email for instructions to finish the process.</small>
                     </td>
                   </tr>
                   : null
@@ -59,24 +70,65 @@ const ManageUserData = (props: {
             </table>
           </td>
         </tr>
-
+        {shouldShowParentEmail
+          ? <tr>
+            <th>Parent Email</th>
+            <td>
+              <table>
+                <tr>
+                  <td>
+                    {props.parentEmail?.verificationChallenge.email ?? "N/A"}
+                    {sentParentEmail ? <span className="text-danger">*</span> : null}
+                  </td>
+                </tr>
+                {
+                  sentParentEmail
+                    ? <tr>
+                      <td>
+                        <small className="text-muted">Your parent must complete the instructions in the email to finish the process.</small>
+                      </td>
+                    </tr>
+                    : null
+                }
+              </table>
+            </td>
+          </tr>
+          : null
+        }
       </tbody>
     </Table>
-    <Action
-      title="Edit Personal Information"
-      icon={Pencil}
-      onClick={() => setShowEditUserData(true)}
-    />
-    <Action
-      title="Change Email"
-      icon={EnvelopePlus}
-      onClick={() => setShowChangeEmail(true)}
-    />
-    <Action
-      title="Change Password"
-      icon={Lock}
-      onClick={() => setShowChangePassword(true)}
-    />
+    <div className='d-flex' >
+      <Action
+        title="Edit Personal Information"
+        icon={Pencil}
+        onClick={() => setShowEditUserData(true)}
+      />
+      <Action
+        title={editOwnEmailString}
+        icon={EnvelopePlus}
+        onClick={() => setShowChangeOwnEmail(true)}
+      />
+      {shouldShowParentEmail
+        ? <Action
+          title={editParentEmailString}
+          icon={EnvelopePlus}
+          onClick={() => setShowChangeParentEmail(true)}
+        />
+        : null
+      }
+      <Action
+        title="Change Password"
+        icon={Lock}
+        onClick={() => setShowChangePassword(true)}
+      />
+      <div className='ms-auto'>
+        <Action
+          title="Log Out"
+          icon={BoxArrowRight}
+          onClick={() => props.setApiKey(null)}
+        />
+      </div>
+    </div>
 
     <DisplayModal
       title="Edit Personal Information"
@@ -93,7 +145,7 @@ const ManageUserData = (props: {
       />
     </DisplayModal>
     <DisplayModal
-      title="Change Email"
+      title="Change Password"
       show={showChangePassword}
       onClose={() => setShowChangePassword(false)}
     >
@@ -105,15 +157,27 @@ const ManageUserData = (props: {
       />
     </DisplayModal>
     <DisplayModal
-      title="Change Email"
-      show={showChangeEmail}
-      onClose={() => setShowChangeEmail(false)}
+      title={editOwnEmailString}
+      show={showChangeOwnEmail}
+      onClose={() => setShowChangeOwnEmail(false)}
     >
       <SendVerificationChallengeForm
         toParent={false}
-        initialEmailAddress={props.email.verificationChallenge.email}
+        initialEmailAddress={props.ownEmail?.verificationChallenge.email ?? ""}
         apiKey={props.apiKey}
-        setVerificationChallenge={() => { setShowChangeEmail(false); setSendEmail(true) }}
+        setVerificationChallenge={() => { setShowChangeOwnEmail(false); setSendOwnEmail(true) }}
+      />
+    </DisplayModal>
+    <DisplayModal
+      title={editParentEmailString}
+      show={showChangeParentEmail}
+      onClose={() => setShowChangeParentEmail(false)}
+    >
+      <SendVerificationChallengeForm
+        toParent={true}
+        initialEmailAddress={props.parentEmail?.verificationChallenge.email ?? ""}
+        apiKey={props.apiKey}
+        setVerificationChallenge={() => { setShowChangeParentEmail(false); setSendParentEmail(true) }}
       />
     </DisplayModal>
 

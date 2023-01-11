@@ -35,7 +35,7 @@ function LoginForm(props: LoginFormProps) {
     let errors: FormikErrors<LoginFormValue> = {};
     let hasError = false;
     if (values.emailOrUsername === "") {
-      errors.emailOrUsername = "Please enter your email";
+      errors.emailOrUsername = "Please enter your email or username";
       hasError = true;
     }
     if (values.password === "") {
@@ -138,7 +138,7 @@ function LoginForm(props: LoginFormProps) {
             <Form.Control
               name="emailOrUsername"
               type="email"
-              placeholder="Email"
+              placeholder="Email or Username"
               value={fprops.values.emailOrUsername }
               onChange={fprops.handleChange}
               isInvalid={!!fprops.errors.emailOrUsername }
@@ -169,7 +169,7 @@ function LoginForm(props: LoginFormProps) {
           <Form.Text className="text-danger mb-3">{fprops.status}</Form.Text>
           <Form.Group className="mb-3">
             <Form.Text>
-              <a href={props.branding.forgotPasswordUrl}>Forgot Password?</a>
+              <a href='/forgot_password'>Forgot Password?</a>
             </Form.Text>
           </Form.Group>
         </Form>

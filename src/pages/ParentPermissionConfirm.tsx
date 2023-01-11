@@ -6,7 +6,7 @@ import { isErr } from '@innexgo/frontend-common';
 
 import { BrandedComponentProps } from '@innexgo/common-react-components';
 
-import DefaultSidebarLayout from '../components/DefaultSidebarLayout';
+import SidebarLayout from '../components/SidebarLayout';
 
 
 type CreateEmailProps = {
@@ -135,7 +135,7 @@ function ParentPermissionConfirm(props: BrandedComponentProps) {
   const [email, setEmail] = React.useState<Email | null>(null);
 
   return (
-    <DefaultSidebarLayout branding={props.branding}>
+    <SidebarLayout branding={props.branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -155,7 +155,7 @@ function ParentPermissionConfirm(props: BrandedComponentProps) {
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout>
+    </SidebarLayout>
   )
 }
 

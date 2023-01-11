@@ -55,7 +55,7 @@ const DefaultSidebarLayout: React.FC<BrandedComponentProps & { children: React.R
           <ArrowRight style={iconStyle} /> Log In
         </a>
         <br />
-        <a href={props.branding.registerUrl} style={linkStyle}>
+        <a href='/register' style={linkStyle}>
           <PersonPlus style={iconStyle} /> Register
         </a>
         <br />

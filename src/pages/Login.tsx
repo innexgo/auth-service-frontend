@@ -3,22 +3,18 @@ import { Card, Button } from "react-bootstrap";
 import { ApiKey, Email } from "@innexgo/frontend-auth-api";
 import LoginForm from '../components/LoginForm';
 import { Branding } from '@innexgo/common-react-components';
-import DefaultSidebarLayout from '../components/SidebarLayout';
+import SidebarLayout from '../components/SidebarLayout';
 import SendVerificationChallengeForm from "../components/SendVerificationChallengeForm";
 
-export interface AuthenticatedComponentRendererProps {
+type LoginProps = {
   branding: Branding,
   apiKey: ApiKey | null,
-  setApiKey: (data: ApiKey | null) => void
+  setApiKey: (a: ApiKey | null) => void
 }
 
-function Login({
-  branding,
-  component: AuthenticatedComponent,
-  apiKey,
-  setApiKey,
+function Login(props: LoginProps) {
+  const { branding, apiKey, setApiKey } = props;
 
-}: AuthenticatedComponentRendererProps) {
   // the email we sent to
   const [sentEmail, setSentEmail] = React.useState<string | null>(null);
   const [sentParentEmail, setSentParentEmail] = React.useState<string | null>(null);
@@ -27,8 +23,35 @@ function Login({
     apiKey.creationTime + apiKey.duration > Date.now() &&
     apiKey.apiKeyKind === "VALID";
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const srcHref = searchParams.get("src");
+  if (srcHref === null) {
+    return <SidebarLayout branding={branding}>
+      <div className="h-100 w-100 d-flex">
+        <Card className="mx-auto my-auto col-md-6">
+          <Card.Body>
+            <Card.Title>Invalid Source</Card.Title>
+            <Card.Text className="text-danger">The origin URL is invalid.</Card.Text>
+          </Card.Body>
+        </Card>
+      </div>
+    </SidebarLayout>
+  }
+
+
   if (isAuthenticated) {
-    return <AuthenticatedComponent apiKey={apiKey!} setApiKey={setApiKey} branding={branding} />
+    const srcUrl = new URL(srcHref);
+    // send data back over
+    const newParams = new URLSearchParams({
+      search: srcUrl.search,
+      hash: srcUrl.hash,
+      apiKey: JSON.stringify(apiKey),
+    });
+    // target will use these internally
+    srcUrl.search = newParams.toString();
+    srcUrl.hash = '';
+    // now go
+    window.location.replace(srcUrl);
   }
 
   const notLoggedIn = apiKey === null ||
@@ -36,7 +59,7 @@ function Login({
     apiKey.apiKeyKind === "CANCEL";
 
   if (notLoggedIn) {
-    return <DefaultSidebarLayout branding={branding}>
+    return <SidebarLayout branding={branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -45,11 +68,11 @@ function Login({
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout>
+    </SidebarLayout>
   }
 
   if (sentEmail !== null) {
-    return <DefaultSidebarLayout branding={branding}>
+    return <SidebarLayout branding={branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -62,11 +85,11 @@ function Login({
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout>
+    </SidebarLayout>
   }
 
   if (sentParentEmail !== null) {
-    return <DefaultSidebarLayout branding={branding}>
+    return <SidebarLayout branding={branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -82,12 +105,12 @@ function Login({
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout>
+    </SidebarLayout>
   }
 
 
   if (apiKey.apiKeyKind === "NO_EMAIL") {
-    return <DefaultSidebarLayout branding={branding}>
+    return <SidebarLayout branding={branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -101,9 +124,9 @@ function Login({
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout>
+    </SidebarLayout>
   } else {
-    return <DefaultSidebarLayout branding={branding}>
+    return <SidebarLayout branding={branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
@@ -120,7 +143,7 @@ function Login({
           </Card.Body>
         </Card>
       </div>
-    </DefaultSidebarLayout >
+    </SidebarLayout >
   }
 }
 

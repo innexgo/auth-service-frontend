@@ -4,7 +4,7 @@ import { Button, Card, Form, } from 'react-bootstrap'
 import { passwordResetNew } from '@innexgo/frontend-auth-api';
 import { isErr } from '@innexgo/frontend-common';
 import { BrandedComponentProps } from '@innexgo/common-react-components';
-import DefaultSidebarLayout from '../components/DefaultSidebarLayout';
+import SidebarLayout from '../components/SidebarLayout';
 
 
 type ForgotPasswordFormProps = {
@@ -92,7 +92,7 @@ function ForgotPasswordForm(props: ForgotPasswordFormProps) {
 
 function ForgotPassword(props: BrandedComponentProps) {
   const [successful, setSuccess] = React.useState(false);
-  return <DefaultSidebarLayout branding={props.branding}>
+  return <SidebarLayout branding={props.branding}>
     <div className="h-100 w-100 d-flex">
       <Card className="mx-auto my-auto col-md-6">
         <Card.Body>
@@ -104,7 +104,7 @@ function ForgotPassword(props: BrandedComponentProps) {
         </Card.Body>
       </Card>
     </div>
-  </DefaultSidebarLayout>
+  </SidebarLayout>
 }
 
 export default ForgotPassword;
