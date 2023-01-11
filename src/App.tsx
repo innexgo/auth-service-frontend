@@ -68,8 +68,11 @@ function App() {
   return <BrowserRouter>
     <Routes>
 
-      {/* Login Page */}
+      {/* Home Page */}
       <Route path="/" element={<HomePage {...apiKeyGetSetter} branding={branding} />} />
+
+      {/* Login Page (used by other applications) */}
+      <Route path="/login" element={<LoginPage branding={branding} />} />
 
       {/* Necessary for the backend auth service */}
       <Route path="/register" element={<RegisterPage {...apiKeyGetSetter} branding={branding} />} />
@@ -81,10 +84,6 @@ function App() {
       {/* Requires you to be logged in */}
       {/* Using PartiallyAuthenticatedComponentRenderer */}
       <Route path="/account" element={<PartiallyAuthenticatedComponentRenderer branding={branding} {...apiKeyGetSetter} component={Account} />} />
-
-      {/* Login Page */}
-      <Route path="/login" element={<LoginPage {...apiKeyGetSetter} branding={branding} />} />
-
 
       {/* Error page */}
       <Route path="*" element={<Error404 />} />

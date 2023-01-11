@@ -8,16 +8,19 @@ import SendVerificationChallengeForm from "../components/SendVerificationChallen
 
 type LoginProps = {
   branding: Branding,
-  apiKey: ApiKey | null,
-  setApiKey: (a: ApiKey | null) => void
 }
 
 function Login(props: LoginProps) {
-  const { branding, apiKey, setApiKey } = props;
+  const { branding } = props;
+
+  // the api key
+  const [apiKey, setApiKey] = React.useState<ApiKey | null>(null);
+
 
   // the email we sent to
   const [sentEmail, setSentEmail] = React.useState<string | null>(null);
   const [sentParentEmail, setSentParentEmail] = React.useState<string | null>(null);
+
 
   const isAuthenticated = apiKey !== null &&
     apiKey.creationTime + apiKey.duration > Date.now() &&
