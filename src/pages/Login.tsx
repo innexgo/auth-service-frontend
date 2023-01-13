@@ -1,10 +1,11 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, OverlayTrigger, Popover } from "react-bootstrap";
 import { ApiKey, Email } from "@innexgo/frontend-auth-api";
 import LoginForm from '../components/LoginForm';
 import { Branding } from '@innexgo/common-react-components';
 import SidebarLayout from '../components/SidebarLayout';
 import SendVerificationChallengeForm from "../components/SendVerificationChallengeForm";
+import { InfoCircle } from 'react-bootstrap-icons';
 
 type LoginProps = {
   branding: Branding,
@@ -41,9 +42,9 @@ function Login(props: LoginProps) {
     </SidebarLayout>
   }
 
+  const srcUrl = new URL(srcHref);
 
   if (isAuthenticated) {
-    const srcUrl = new URL(srcHref);
     // send data back over
     const newParams = new URLSearchParams({
       search: srcUrl.search,
@@ -66,8 +67,34 @@ function Login(props: LoginProps) {
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
           <Card.Body>
-            <Card.Title>Login</Card.Title>
-            <LoginForm branding={branding} onSuccess={setApiKey} />
+            <div className="d-flex justify-content-between">
+              <Card.Title><h2>Login</h2> to {srcUrl.host}</Card.Title>
+
+              <OverlayTrigger
+                trigger="click"
+                placement="auto"
+                overlay={
+                  <Popover id="information-tooltip">
+                    <Popover.Header as="h3">Help</Popover.Header>
+                    <Popover.Body>
+                      <ul>
+                        <li>
+                          The page you are trying to access requires authentication.
+                        </li>
+                        <li>
+                          You will be redirected to <u>{srcUrl.href}</u> after signing in.
+                        </li>
+                      </ul>
+                    </Popover.Body>
+                  </Popover>
+                }
+              >
+                <button type="button" className="btn btn-sm">
+                  <InfoCircle />
+                </button>
+              </OverlayTrigger>
+            </div>
+            <LoginForm branding={branding} onSuccess={setApiKey} srcHost={srcUrl.host} />
           </Card.Body>
         </Card>
       </div>
@@ -128,7 +155,7 @@ function Login(props: LoginProps) {
         </Card>
       </div>
     </SidebarLayout>
-  } else {
+  } else if (apiKey.apiKeyKind === "NO_PARENT") {
     return <SidebarLayout branding={branding}>
       <div className="h-100 w-100 d-flex">
         <Card className="mx-auto my-auto col-md-6">
@@ -147,6 +174,8 @@ function Login(props: LoginProps) {
         </Card>
       </div>
     </SidebarLayout >
+  } else {
+    return <div />
   }
 }
 

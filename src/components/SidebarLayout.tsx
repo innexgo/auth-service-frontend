@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, House, PersonPlus, Gear, FileText } from 'react-bootstrap-icons';
+import { ArrowRight, House, PersonPlus, Gear, FileText, PersonGear } from 'react-bootstrap-icons';
 import { Container, Row, Col } from 'react-bootstrap';
 import { BrandedComponentProps } from '@innexgo/common-react-components';
 
@@ -47,12 +47,8 @@ const DefaultSidebarLayout: React.FC<BrandedComponentProps & { children: React.R
           />
         </a>
         <h4 style={gradText} >{props.branding.name}</h4>
-        <a href={props.branding.homeUrl} style={linkStyle}>
-          <House style={iconStyle} /> Home
-        </a>
-        <br />
         <a href={props.branding.dashboardUrl} style={linkStyle}>
-          <ArrowRight style={iconStyle} /> Log In
+          <PersonGear style={iconStyle} /> Manage Account
         </a>
         <br />
         <a href='/register' style={linkStyle}>

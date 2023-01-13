@@ -1,8 +1,8 @@
 import { Formik, FormikHelpers, FormikErrors } from 'formik'
 import { Button, Form, } from 'react-bootstrap'
-import { ApiKey, apiKeyNewWithEmail, apiKeyNewWithUsername } from '@innexgo/frontend-auth-api';
+import { ApiKey, apiKeyNewWithEmail, apiKeyNewWithUsername, info } from '@innexgo/frontend-auth-api';
 import { Branding } from '@innexgo/common-react-components';
-import { isErr } from '@innexgo/frontend-common';
+import { isErr, unwrap } from '@innexgo/frontend-common';
 
 
 // onSuccess is a callback that will be run once the user has successfully logged in.
@@ -11,6 +11,7 @@ import { isErr } from '@innexgo/frontend-common';
 interface LoginFormProps {
   branding: Branding,
   onSuccess: (apiKey: ApiKey) => void
+  srcHost?: string,
 }
 
 function LoginForm(props: LoginFormProps) {
@@ -52,6 +53,20 @@ function LoginForm(props: LoginFormProps) {
     }
 
     let duration = 5 * 60 * 60 * 1000;
+
+
+    // attempt to fetch info
+    let maybeApiInfo = await info();
+    if (isErr(maybeApiInfo)) {
+      setStatus("An unknown or network error has occured while trying to log you in");
+      return;
+    }
+    let apiInfo = unwrap(maybeApiInfo);
+
+    if (props.srcHost && !apiInfo.permittedSources.includes(props.srcHost)) {
+      setStatus("The site you're trying to log into doesn't support this authentication method");
+      return;
+    }
 
     // we make our request here
     let maybeApiKey = values.emailOrUsername.includes('@')
@@ -120,7 +135,7 @@ function LoginForm(props: LoginFormProps) {
       initialStatus=""
       initialValues={{
         // these are the default values the form will start with
-        emailOrUsername : "",
+        emailOrUsername: "",
         password: "",
       }}
     >
@@ -139,12 +154,12 @@ function LoginForm(props: LoginFormProps) {
               name="emailOrUsername"
               type="email"
               placeholder="Email or Username"
-              value={fprops.values.emailOrUsername }
+              value={fprops.values.emailOrUsername}
               onChange={fprops.handleChange}
-              isInvalid={!!fprops.errors.emailOrUsername }
+              isInvalid={!!fprops.errors.emailOrUsername}
             />
             {/* Feedback fields aren't usually displayed unless we called `setError` in `onSubmit` */}
-            <Form.Control.Feedback type="invalid"> {fprops.errors.emailOrUsername } </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid"> {fprops.errors.emailOrUsername} </Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Password</Form.Label>
