@@ -42,21 +42,19 @@ function Login(props: LoginProps) {
     </SidebarLayout>
   }
 
-  const srcUrl = new URL(srcHref);
-
   if (isAuthenticated) {
-    // send data back over
+    const destHref= new URL(srcHref);
     const newParams = new URLSearchParams({
-      search: srcUrl.search,
-      hash: srcUrl.hash,
+      src: srcHref,
       apiKey: JSON.stringify(apiKey),
     });
     // target will use these internally
-    srcUrl.search = newParams.toString();
-    srcUrl.hash = '';
+    destHref.search = newParams.toString();
     // now go
-    window.location.replace(srcUrl);
+    window.location.replace(destHref);
   }
+
+  const srcUrl = new URL(srcHref);
 
   const notLoggedIn = apiKey === null ||
     apiKey.creationTime + apiKey.duration <= Date.now() ||
